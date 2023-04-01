@@ -1,29 +1,28 @@
 import axios from "axios";
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '34731135-6d68099f6d308706ad328c34f';
-const OPTIONS = {
-    headers: {
-        Authorization: API_KEY,
-    }
-}
+const BASE_URL = 'https://pixabay.com/api/'; // Aдрес вказаний над ключем в полі   Search Images на сторінці https://pixabay.com/api/docs/#api_search_images
+const API_KEY = '34731135-6d68099f6d308706ad328c34f'; // Зареєструвалася на Pixabay і отримала свій унікальний ключ доступу
 
-export class ApiImageService {
+// Клас запиту для бекенду API сервісу Pixabay https://pixabay.com/api/docs/#api_search_images
+export default class ApiImageService {
     constructor() {
-        searchQuery = '';
+        this.searchQuery = ''; // name в input в index.html ="searchQuery" 
+        this.page = 1;
+        this.PER_PAGE = 40;
     }
     async fetchGallery() {
         const axiosOptions = {
             method: 'GET',
             url: BASE_URL,
             params: {
+            //Список параметрів 
                 key: API_KEY,
-                q: `${searchQuery}`,
+                q: `${this.searchQuery}`, // Те, що буде вводити користувач
                 image_type: 'photo',
                 orientation: 'horizontal',
                 safesearch: 'true',
-                page: 1,
-                per_page: 40,
+                page: `${this.page}`,
+                per_page: `${this.PER_PAGE}`,
             }
         }
         try {
@@ -31,30 +30,31 @@ export class ApiImageService {
 
             const data = response.data;
 
-            incrementPage();
             return data;
+
         } catch (error) {
             console.error(error);
         }
     }
 
-    incrementPage() {
-        page += 1;
+    resetPage() {
+        this.page = 1;
     }
 
-    resetPage() {
-        page = 1;
+
+    incrementPage() {
+        this.page += 1;
     }
 
     resetEndOfHits() {
-        endOfHits = false;
-    }
+        this.endOfHits = false;
+    } 
 
     get query() {
-        return searchQuery;
+        return this.searchQuery;
     }
 
     set query(newQuery) {
-        searchQuery = newQuery;
+        this.searchQuery = newQuery;
     }
 }

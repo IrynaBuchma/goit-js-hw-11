@@ -27,20 +27,28 @@ function onSearch(e) {
   refs.gallery.innerHTML = '';
   newGallery.query = e.currentTarget.elements.searchQuery.value.trim(); // внесене користувачем значення
   newGallery.resetPage();
+
+  if (newGallery.query === '') {
+    Notify.info('Search field is empty, please fill it with your request');
+    return;
+  }
+
+  imagesShown = 0;
   
   fetchGallery();
 }
 
 async function fetchGallery() {
+  refs.loadMoreBtn.classList.add('is-hidden');
 
   const images = await newGallery.fetchGallery();
-  const { hits, total } = images;
-  imagesShown += hits.length;
+  const { hits, totalHits } = images;
+ /*  imagesShown += hits.length; */
 
   /* console.log(images);
   console.log(images.totalHits); */
 
-  if (!total) {
+  if (!totalHits) {
     Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         return;
   }
@@ -49,12 +57,17 @@ async function fetchGallery() {
   imagesShown += hits.length;
   lightbox.refresh();
 
-  if (imagesShown < total) {
-    Notify.success(`Hooray! We found ${total} images !!!`);
+  if (newGallery.page === 1) {
+    Notify.success(`Hooray! We found ${totalHits} images !!!`);
+    if (imagesShown < 40) {
+      refs.loadMoreBtn.classList.remove('is-hidden');
+    }
+  }
+  if (imagesShown < totalHits) {
     refs.loadMoreBtn.classList.remove('is-hidden');
   }
 
-  if (imagesShown >= total) {
+  if (imagesShown >= totalHits) {
     Notify.info("We're sorry, but you've reached the end of search results.");
     refs.loadMoreBtn.classList.add('is-hidden');
   }

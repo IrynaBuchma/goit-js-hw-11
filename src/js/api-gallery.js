@@ -29,7 +29,7 @@ export default class ApiImageService {
             const response = await axios(axiosOptions);
 
             const data = response.data;
-
+            console.log(data);
             return data;
 
         } catch (error) {
